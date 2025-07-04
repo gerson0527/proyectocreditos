@@ -45,7 +45,6 @@ export const ClienteService = {
       },
       body: JSON.stringify(cliente),
     })
-    console.log(response);
     if (!response.ok) throw new Error('Error al crear el cliente')
     return response.json()
   },
@@ -80,6 +79,30 @@ export const ClienteService = {
     })
     console.log(response)
     if (!response.ok) throw new Error('Error al buscar clientes')
+    return response.json()
+  },
+
+  // Descargar template de Excel
+  downloadTemplate: async (): Promise<Blob> => {
+    const response = await fetch(`${API_BASE_URL}/clientes/template`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+    if (!response.ok) throw new Error('Error al descargar el template')
+    return response.blob()
+  },
+
+  // Subir archivo Excel con clientes
+  uploadExcel: async (file: File): Promise<any> => {
+    const formData = new FormData()
+    formData.append('excel', file)
+
+    const response = await fetch(`${API_BASE_URL}/clientes/upload-excel`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    })
+    if (!response.ok) throw new Error('Error al subir el archivo Excel')
     return response.json()
   },
   

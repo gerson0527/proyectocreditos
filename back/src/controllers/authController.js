@@ -17,7 +17,7 @@ exports.login = async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {
-      return res.status(401).json({ success: false, message: "Credenciales inválidas" });
+      return res.status(401).json({ success: false, message: "password incorrecto" });
     }
 
     // 1. Generar JWT de acceso (15-30 min de vida)
@@ -134,6 +134,49 @@ exports.logout = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error al cerrar sesión"
+    });
+  }
+};
+
+exports.cambiarPassword = async (req, res) => {
+  const { userId, oldPassword, newPassword } = req.body;
+
+  try {
+    // Buscar al usuario por ID
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado"
+      });
+    }
+
+    // Verificar la contraseña actual
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Contraseña actual incorrecta"
+      });
+    }
+
+    // Hashear la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar la contraseña en la base de datos
+    await user.update({ password: hashedPassword });
+
+    res.json({
+      success: true,
+      message: "Contraseña cambiada exitosamente"
+    });
+  } catch (error) {
+    console.error('Error al cambiar la contraseña:', error);
+    res.status(500).json({
+      success: false,
+      message: "Error al cambiar la contraseña"
     });
   }
 };

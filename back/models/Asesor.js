@@ -35,14 +35,6 @@ module.exports = (sequelize, DataTypes) => {
   creditos: {
     type: DataTypes.INTEGER,
     defaultValue: 0
-  },
-  tasaAprobacion: {
-    type: DataTypes.FLOAT,
-    defaultValue: 0
-  },
-  rendimiento: {
-    type: DataTypes.ENUM('Alto', 'Medio', 'Bajo', 'Nuevo'),
-    defaultValue: 'Nuevo'
   }
 }, {
     tableName: 'asesor'

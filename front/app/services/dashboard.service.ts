@@ -1,9 +1,39 @@
 const API_BASE_URL = 'http://localhost:3000/api'
 
 export interface DashboardKPI {
-  value: number
-  variation: number
-  trend: 'up' | 'down' | 'neutral'
+  creditos_en_proceso?: number
+  variacion_semanal?: string
+  monto_en_solicitudes?: string
+  variacion_mensual?: string
+  tasa_aprobacion?: number
+  tiempo_promedio_dias?: number
+}
+
+export interface UltimaSolicitud {
+  id: number
+  type: 'success' | 'warning' | 'info'
+  title: string
+  description: string
+  time: string
+  entidad: string
+  estado: string
+  monto: number
+  cliente: {
+    nombre: string
+    cedula: string
+  }
+  fechas: {
+    solicitud: string
+    aprobacion?: string
+    rechazo?: string
+  }
+}
+
+export interface DistribucionItem {
+  tipo?: string
+  estado?: string
+  cantidad: number
+  porcentaje: number
 }
 
 export const DashboardService = {
@@ -44,6 +74,36 @@ export const DashboardService = {
       credentials: 'include',
     })
     if (!response.ok) throw new Error('Error al obtener tiempo promedio')
+    return response.json()
+  },
+
+  // Obtener últimas solicitudes
+  getUltimasSolicitudes: async (limit: number = 10): Promise<UltimaSolicitud[]> => {
+    const response = await fetch(`${API_BASE_URL}/dashboard/ultimas-solicitudes?limit=${limit}`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+    if (!response.ok) throw new Error('Error al obtener últimas solicitudes')
+    return response.json()
+  },
+
+  // Obtener distribución por tipos
+  getDistribucionTipos: async (): Promise<DistribucionItem[]> => {
+    const response = await fetch(`${API_BASE_URL}/dashboard/distribucion-tipos`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+    if (!response.ok) throw new Error('Error al obtener distribución por tipos')
+    return response.json()
+  },
+
+  // Obtener distribución por estados
+  getDistribucionEstados: async (): Promise<DistribucionItem[]> => {
+    const response = await fetch(`${API_BASE_URL}/dashboard/distribucion-estados`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+    if (!response.ok) throw new Error('Error al obtener distribución por estados')
     return response.json()
   },
 }

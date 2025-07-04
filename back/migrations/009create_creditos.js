@@ -82,6 +82,9 @@ module.exports = {
       fechaVencimiento: {
         type: Sequelize.DATE
       },
+      fechaRechazo: {
+        type: Sequelize.DATE
+      },
       observaciones: {
         type: Sequelize.TEXT
       },

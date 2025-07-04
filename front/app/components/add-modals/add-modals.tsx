@@ -12,14 +12,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-
-interface AddModalProps {
-  type: "cliente" | "banco" | "asesor" | "financiera" | "objetivo" | "credito"
-  isOpen: boolean
-  onClose: () => void
-  onSave: (data: any) => void
-}
-
 import { useState, useEffect } from "react"
 import { BancoService, type Banco } from "@/services/banco.service"
 import { AsesorService, type Asesor } from "@/services/asesores.service"
@@ -28,11 +20,25 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ClienteService, type Cliente } from "@/services/cliente.service"
 
-export function AddModal({ type, isOpen, onClose, onSave }: AddModalProps) {
+// Agregar los imports necesarios al inicio del archivo
+import { useToast } from "@/hooks/use-toast"
+
+// Agregar estas props a la interfaz AddModalProps
+interface AddModalProps {
+  type: "cliente" | "banco" | "asesor" | "financiera" | "objetivo" | "credito"
+  isOpen: boolean
+  onClose: () => void
+  onSave: (data: any) => void
+  setClientesData?: (fn: (prev: any[]) => any[]) => void
+  onAddNotification?: (notification: any) => void
+}
+
+export function AddModal({ type, isOpen, onClose, onSave, setClientesData, onAddNotification }: AddModalProps) {
   const [formData, setFormData] = useState<any>({})
   const [bancos, setBancos] = useState<Banco[]>([])
   const [financieras, setFinancieras] = useState<Financiera[]>([])
   const [asesores, setAsesores] = useState<Asesor[]>([])
+  const { toast } = useToast()
 
   useEffect(() => {
     if (type === "credito" && isOpen) {
@@ -55,10 +61,18 @@ export function AddModal({ type, isOpen, onClose, onSave }: AddModalProps) {
     }
   }
 
-  const handleSave = () => {
-    onSave(formData)
-    setFormData({})
-    onClose()
+  const handleSave = async () => {
+    try {
+      if (type === "cliente") {
+        await handleAddCliente(formData)
+      } else {
+        onSave(formData)
+      }
+      setFormData({})
+      onClose()
+    } catch (error) {
+      console.error("Error al guardar:", error)
+    }
   }
 
   const handleClose = () => {
@@ -108,6 +122,72 @@ export function AddModal({ type, isOpen, onClose, onSave }: AddModalProps) {
   }
   
   // Add this at the end of your component, before the final closing brace
+  const getEstadoVariant = (estado: string) => {
+    switch (estado) {
+      case "Activo":
+        return "success"
+      case "Pendiente":
+        return "warning"
+      case "Inactivo":
+        return "destructive"
+      default:
+        return "default"
+    }
+  }
+
+  const handleAddCliente = async (data: any) => {
+    try {
+      const newCliente = await ClienteService.createCliente({
+        nombre: data.nombre,
+        apellido: data.apellido,
+        email: data.email,
+        dni: data.dni,
+        telefono: data.telefono,
+        direccion: data.direccion,
+        fechanacimiento: data.fechanacimiento,
+        ingresosMensuales: parseFloat(data.ingresos),
+        estado: data.estado,
+      })
+
+      if (setClientesData) {
+        setClientesData(prev => [
+          { ...newCliente, estadoVariant: getEstadoVariant(newCliente.estado) },
+          ...prev
+        ])
+      }
+
+      toast({
+        title: "Cliente agregado",
+        description: `${data.nombre} ha sido agregado al sistema correctamente.`,
+        variant: "success",
+      })
+
+      if (onAddNotification) {
+        onAddNotification({
+          type: "success",
+          title: "Nuevo cliente agregado",
+          description: `Se registró a ${data.nombre} en el sistema`,
+          read: false,
+        })
+      }
+
+      // Si estamos en el modal de crédito, actualizar el cliente seleccionado
+      if (type === "credito") {
+        handleSelectCliente(newCliente)
+      }
+
+      return newCliente
+    } catch (error) {
+      console.error(error)
+      toast({
+        title: "Error",
+        description: "No se pudo agregar el cliente",
+        variant: "destructive",
+      })
+      throw error
+    }
+  }
+
   if (isCreateClienteModalOpen) {
     return (
       <AddModal
@@ -117,13 +197,18 @@ export function AddModal({ type, isOpen, onClose, onSave }: AddModalProps) {
           setIsCreateClienteModalOpen(false)
           setOpen(true)
         }}
-        onSave={(clienteData) => {
-          // Handle the new client data here
-          setIsCreateClienteModalOpen(false)
-          setOpen(true)
-          // Optionally refresh the search with the new client
-          handleSearch(clienteData.dni)
+        onSave={async (clienteData) => {
+          try {
+            await handleAddCliente(clienteData)
+            setIsCreateClienteModalOpen(false)
+            setOpen(true)
+            handleSearch(clienteData.dni)
+          } catch (error) {
+            console.error("Error al crear el cliente:", error)
+          }
         }}
+        setClientesData={setClientesData}
+        onAddNotification={onAddNotification}
       />
     )
   }
@@ -142,7 +227,7 @@ export function AddModal({ type, isOpen, onClose, onSave }: AddModalProps) {
             {formData.dni || "Buscar por cédula..."}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0" align="start">
+        <PopoverContent className="w-[300px] h-[300px] p-0 overflow-y-auto" align="start">
           <Command>
             <CommandInput
               placeholder="Ingrese la cédula del cliente"

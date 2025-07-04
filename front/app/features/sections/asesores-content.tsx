@@ -245,6 +245,10 @@ export function AsesoresContent({ onAddNotification }: AsesoresContentProps) {
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex justify-between">
+                    <span className="text-sm">Sucursal:</span>
+                    <span className="font-medium">{asesor.sucursal}</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-sm">Créditos este mes:</span>
                     <span className="font-medium">{asesor.creditos}</span>
                   </div>

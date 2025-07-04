@@ -11,4 +11,11 @@ router.get('/monto-solicitudes', dashboardController.getMontoSolicitudes);
 router.get('/tasa-aprobacion', dashboardController.getTasaAprobacion);
 router.get('/tiempo-promedio', dashboardController.getTiempoPromedio);
 
+// Actividad reciente
+router.get('/ultimas-solicitudes', dashboardController.getUltimasSolicitudes);
+
+// Distribución y estadísticas
+router.get('/distribucion-tipos', dashboardController.getDistribucionTipos);
+router.get('/distribucion-estados', dashboardController.getDistribucionEstados);
+
 module.exports = router;

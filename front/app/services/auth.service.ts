@@ -27,4 +27,13 @@ export const AuthService = {
       credentials: 'include',
     });
   },
+  cambiarPassword: async (data: { userId: string; oldPassword: string; newPassword: string }) => {
+    const response = await fetch(`${API_BASE_URL}/api/auth/cambiar-password`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
 };

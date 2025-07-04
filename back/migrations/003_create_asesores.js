@@ -29,14 +29,6 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
-      tasaAprobacion: {
-        type: Sequelize.FLOAT,
-        defaultValue: 0
-      },
-      rendimiento: {
-        type: Sequelize.ENUM('Alto', 'Medio', 'Bajo', 'Nuevo'),
-        defaultValue: 'Nuevo'
-      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false

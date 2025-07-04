@@ -19,6 +19,7 @@ const sidebarItems = [
   { icon: DollarSign, label: "Créditos", id: "creditos" },
   { icon: Target, label: "Objetivos", id: "objetivos" },
   { icon: FileText, label: "Reportes", id: "reportes" },
+  { icon: FileText, label: "Comisiones", id: "comisiones" },
   { icon: Settings, label: "Configuración", id: "configuracion" },
 ]
 

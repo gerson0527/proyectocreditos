@@ -20,8 +20,6 @@ module.exports = {
           experienciaPrev: `${experienciaAnos} años en el sector financiero`,
           fechaIngreso: new Date(2020 + Math.floor(Math.random() * 4), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
           creditos: creditos,
-          tasaAprobacion: tasaAprobacion,
-          rendimiento: rendimientos[Math.floor(Math.random() * rendimientos.length)],
           createdAt: new Date(),
           updatedAt: new Date()
         });

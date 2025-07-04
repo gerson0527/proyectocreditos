@@ -60,6 +60,9 @@ module.exports = (sequelize, DataTypes) => {
   fechaAprobacion: {
     type: DataTypes.DATE
   },
+  fechaRechazo: {
+    type: DataTypes.DATE
+  },
   fechaVencimiento: {
     type: DataTypes.DATE
   },

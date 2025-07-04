@@ -9,6 +9,7 @@ import { BancosContent } from "@/features/sections/bancos-content"
 import { FinancierasContent } from "@/features/sections/financieras-content"
 import { ObjetivosContent } from "@/features/sections/objetivos-content"
 import { CreditosContent } from "@/features/sections/creditos-content"
+import { ComisionesContent } from "@/features/sections/comisiones-content"
 import { ReportesContent } from "@/features/sections/reportes-content"
 import { ConfiguracionContent } from "@/features/sections/configuracion-content"
 import { Toaster } from "@/components/toaster/toaster"
@@ -66,6 +67,8 @@ export default function Component() {
         return <ReportesContent />
       case "creditos":
         return <CreditosContent onAddNotification={addNotification}/>
+      case "comisiones":
+        return <ComisionesContent onAddNotification={addNotification} />
       case "configuracion":
         return <ConfiguracionContent onAddNotification={addNotification} />
       default:
